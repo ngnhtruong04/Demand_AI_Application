@@ -1,0 +1,10 @@
+{
+  "raw_schema": "raw",
+  "core_schema": "core",
+  "tables": {
+    "inventory": "inventory",
+    "calendar": "calendar",
+    "sales_daily": "sales_train",
+    "series_weights": "test_weights"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "selection_split": "validation_only",
+  "selection_metric": "wmae",
+  "grid_step": 0.01,
+  "require_all_three_models": true,
+  "minimum_active_weight": 0.01,
+  "weights": {
+    "LightGBM": 0.34,
+    "XGBoost": 0.3,
+    "CatBoost": 0.36
+  },
+  "validation_metrics": {
+    "mae": 20.104163476218325,
+    "rmse": 62.670639989394026,
+    "wape": 0.16866502989688142,
+    "row_bias": -4.917846817144553,
+    "wmae": 18.14513414309363,
+    "weighted_bias": -4.244857482045524,
+    "cancellation_ratio": 0.7660608376565133
+  },
+  "validation_gate": {
+    "wmae_pass": false,
+    "wape_pass": true
+  },
+  "final_seen_during_selection": false
+}

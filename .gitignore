@@ -1,0 +1,60 @@
+# Environment and secrets
+.env
+.env.*
+.env.local
+.env.*.local
+!.env.example
+!**/.env.example
+*.zip
+.gemini/
+.claude/
+.codex/
+
+# Python
+.venv/
+backend/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Frontend / Node
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+build/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Certificates & Keys
+*.pem
+!certs/.gitkeep
+!backend/certs/.gitkeep
+
+# Data & Ingestion reports (reproducible/large artifacts)
+data/
+backend/data/
+backend/reports/
+
+# Internal implementation, review plans & archives
+docs/plans/
+backend/docs/plans/
+docs/archive/
+
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+
+# Other
+no_push
+*.joblib
+.old/
+# Immutable forecast inputs/models and per-run SHAP cache
+backend/data/forecast_artifacts/

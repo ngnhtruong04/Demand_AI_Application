@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DemandAI Forecast API Contract",
+  "version": "1.0.0",
+  "description": "Frontend-Backend contract for 14-day recursive ensemble demand forecast.",
+  "endpoint": {
+    "path": "/api/v1/forecast/14d",
+    "method": "GET",
+    "query_parameters": {
+      "unique_id": {
+        "type": "string",
+        "description": "Specific item unique_id or 'all'",
+        "default": "all",
+        "example": "10"
+      },
+      "warehouse": {
+        "type": "string",
+        "description": "Optional warehouse filter",
+        "example": "Prague_3"
+      },
+      "history_days": {
+        "type": "integer",
+        "default": 60,
+        "description": "Lookback window in days"
+      },
+      "horizon_days": {
+        "type": "integer",
+        "default": 14,
+        "description": "Forecast horizon days"
+      }
+    }
+  },
+  "response_schema": {
+    "type": "object",
+    "required": [
+      "status",
+      "forecast_horizon_days",
+      "total_items",
+      "generated_at",
+      "items"
+    ],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["success", "error"]
+      },
+      "forecast_horizon_days": {
+        "type": "integer",
+        "example": 14
+      },
+      "total_items": {
+        "type": "integer",
+        "example": 1
+      },
+      "generated_at": {
+        "type": "string",
+        "format": "date-time",
+        "example": "2026-09-14T09:58:28.000Z"
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "sku",
+            "name",
+            "category",
+            "warehouse",
+            "forecast14d",
+            "onHandStock",
+            "status",
+            "daily_points"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "example": "10"
+            },
+            "sku": {
+              "type": "string",
+              "example": "SKU-010"
+            },
+            "name": {
+              "type": "string",
+              "example": "Pastry_0"
+            },
+            "category": {
+              "type": "string",
+              "example": "Bakery"
+            },
+            "warehouse": {
+              "type": "string",
+              "example": "Prague_3"
+            },
+            "forecast14d": {
+              "type": "number",
+              "description": "Sum of 14-day forecasted sales units",
+              "example": 334.55
+            },
+            "onHandStock": {
+              "type": "integer",
+              "example": 401
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "In Stock",
+                "Monitor",
+                "Reorder",
+                "Critical",
+                "Deadstock"
+              ],
+              "example": "In Stock"
+            },
+            "daily_points": {
+              "type": "array",
+              "minItems": 14,
+              "maxItems": 14,
+              "items": {
+                "type": "object",
+                "required": ["day", "date", "predicted"],
+                "properties": {
+                  "day": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 14,
+                    "example": 1
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2024-06-03"
+                  },
+                  "predicted": {
+                    "type": "number",
+                    "example": 20.56
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "sample_response": {
+    "status": "success",
+    "forecast_horizon_days": 14,
+    "total_items": 1,
+    "generated_at": "2024-06-02T23:59:59Z",
+    "items": [
+      {
+        "id": "10",
+        "sku": "SKU-010",
+        "name": "Pastry_0",
+        "category": "Bakery",
+        "warehouse": "Prague_3",
+        "forecast14d": 334.55,
+        "onHandStock": 401,
+        "status": "In Stock",
+        "daily_points": [
+          {"day": 1, "date": "2024-06-03", "predicted": 20.56},
+          {"day": 2, "date": "2024-06-04", "predicted": 19.73},
+          {"day": 3, "date": "2024-06-05", "predicted": 22.59},
+          {"day": 4, "date": "2024-06-06", "predicted": 22.79},
+          {"day": 5, "date": "2024-06-07", "predicted": 28.53},
+          {"day": 6, "date": "2024-06-08", "predicted": 25.33},
+          {"day": 7, "date": "2024-06-09", "predicted": 22.42},
+          {"day": 8, "date": "2024-06-10", "predicted": 21.96},
+          {"day": 9, "date": "2024-06-11", "predicted": 21.91},
+          {"day": 10, "date": "2024-06-12", "predicted": 22.24},
+          {"day": 11, "date": "2024-06-13", "predicted": 24.05},
+          {"day": 12, "date": "2024-06-14", "predicted": 30.52},
+          {"day": 13, "date": "2024-06-15", "predicted": 26.04},
+          {"day": 14, "date": "2024-06-16", "predicted": 25.90}
+        ]
+      }
+    ]
+  }
+}

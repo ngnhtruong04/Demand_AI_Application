@@ -1,0 +1,975 @@
+{
+  "warehouse": {
+    "feature": "warehouse",
+    "label": "Warehouse",
+    "business_meaning": "Warehouse / fulfillment location",
+    "unit": "category",
+    "group": "identity"
+  },
+  "total_orders": {
+    "feature": "total_orders",
+    "label": "Total orders",
+    "business_meaning": "Overall warehouse order volume",
+    "unit": "orders",
+    "group": "order_context"
+  },
+  "sell_price_main": {
+    "feature": "sell_price_main",
+    "label": "Main selling price",
+    "business_meaning": "Current product selling price",
+    "unit": "price",
+    "group": "price"
+  },
+  "type_0_discount": {
+    "feature": "type_0_discount",
+    "label": "Type 0 Discount",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "discount value",
+    "group": "promotion"
+  },
+  "type_1_discount": {
+    "feature": "type_1_discount",
+    "label": "Type 1 Discount",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "discount value",
+    "group": "promotion"
+  },
+  "type_2_discount": {
+    "feature": "type_2_discount",
+    "label": "Type 2 Discount",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "discount value",
+    "group": "promotion"
+  },
+  "type_3_discount": {
+    "feature": "type_3_discount",
+    "label": "Type 3 Discount",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "discount value",
+    "group": "promotion"
+  },
+  "type_4_discount": {
+    "feature": "type_4_discount",
+    "label": "Type 4 Discount",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "discount value",
+    "group": "promotion"
+  },
+  "type_5_discount": {
+    "feature": "type_5_discount",
+    "label": "Type 5 Discount",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "discount value",
+    "group": "promotion"
+  },
+  "type_6_discount": {
+    "feature": "type_6_discount",
+    "label": "Type 6 Discount",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "discount value",
+    "group": "promotion"
+  },
+  "product_unique_id": {
+    "feature": "product_unique_id",
+    "label": "Product Unique Id",
+    "business_meaning": "Model input feature",
+    "unit": "unknown",
+    "group": "other"
+  },
+  "name": {
+    "feature": "name",
+    "label": "Name",
+    "business_meaning": "Model input feature",
+    "unit": "unknown",
+    "group": "other"
+  },
+  "L1_category_name_en": {
+    "feature": "L1_category_name_en",
+    "label": "L1 Category Name En",
+    "business_meaning": "Model input feature",
+    "unit": "unknown",
+    "group": "other"
+  },
+  "L2_category_name_en": {
+    "feature": "L2_category_name_en",
+    "label": "L2 Category Name En",
+    "business_meaning": "Model input feature",
+    "unit": "unknown",
+    "group": "other"
+  },
+  "L3_category_name_en": {
+    "feature": "L3_category_name_en",
+    "label": "L3 Category Name En",
+    "business_meaning": "Model input feature",
+    "unit": "unknown",
+    "group": "other"
+  },
+  "L4_category_name_en": {
+    "feature": "L4_category_name_en",
+    "label": "L4 Category Name En",
+    "business_meaning": "Model input feature",
+    "unit": "unknown",
+    "group": "other"
+  },
+  "holiday_name": {
+    "feature": "holiday_name",
+    "label": "Holiday Name",
+    "business_meaning": "Calendar / seasonal signal",
+    "unit": "unknown",
+    "group": "calendar"
+  },
+  "holiday": {
+    "feature": "holiday",
+    "label": "Holiday",
+    "business_meaning": "Calendar / seasonal signal",
+    "unit": "unknown",
+    "group": "calendar"
+  },
+  "shops_closed": {
+    "feature": "shops_closed",
+    "label": "Shops Closed",
+    "business_meaning": "Model input feature",
+    "unit": "unknown",
+    "group": "other"
+  },
+  "winter_school_holidays": {
+    "feature": "winter_school_holidays",
+    "label": "Winter School Holidays",
+    "business_meaning": "Calendar / seasonal signal",
+    "unit": "unknown",
+    "group": "calendar"
+  },
+  "school_holidays": {
+    "feature": "school_holidays",
+    "label": "School Holidays",
+    "business_meaning": "Calendar / seasonal signal",
+    "unit": "unknown",
+    "group": "calendar"
+  },
+  "year": {
+    "feature": "year",
+    "label": "Year",
+    "business_meaning": "Model input feature",
+    "unit": "unknown",
+    "group": "other"
+  },
+  "month": {
+    "feature": "month",
+    "label": "Month",
+    "business_meaning": "Calendar / seasonal signal",
+    "unit": "unknown",
+    "group": "calendar"
+  },
+  "weekday": {
+    "feature": "weekday",
+    "label": "Weekday",
+    "business_meaning": "Day-of-week / weekly seasonality signal",
+    "unit": "unknown",
+    "group": "calendar"
+  },
+  "day": {
+    "feature": "day",
+    "label": "Day",
+    "business_meaning": "Calendar / seasonal signal",
+    "unit": "unknown",
+    "group": "calendar"
+  },
+  "sin_dayofyear": {
+    "feature": "sin_dayofyear",
+    "label": "Sin Dayofyear",
+    "business_meaning": "Calendar / seasonal signal",
+    "unit": "unknown",
+    "group": "calendar"
+  },
+  "cos_dayofyear": {
+    "feature": "cos_dayofyear",
+    "label": "Cos Dayofyear",
+    "business_meaning": "Calendar / seasonal signal",
+    "unit": "unknown",
+    "group": "calendar"
+  },
+  "name_0": {
+    "feature": "name_0",
+    "label": "Name 0",
+    "business_meaning": "Model input feature",
+    "unit": "unknown",
+    "group": "other"
+  },
+  "max_discount": {
+    "feature": "max_discount",
+    "label": "Max Discount",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "discounted_price": {
+    "feature": "discounted_price",
+    "label": "Discounted price",
+    "business_meaning": "Current price after discount",
+    "unit": "price",
+    "group": "price"
+  },
+  "sales_1": {
+    "feature": "sales_1",
+    "label": "Sales 1 days ago",
+    "business_meaning": "Historical sales observed 1 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_2": {
+    "feature": "sales_2",
+    "label": "Sales 2 days ago",
+    "business_meaning": "Historical sales observed 2 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_3": {
+    "feature": "sales_3",
+    "label": "Sales 3 days ago",
+    "business_meaning": "Historical sales observed 3 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_4": {
+    "feature": "sales_4",
+    "label": "Sales 4 days ago",
+    "business_meaning": "Historical sales observed 4 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_5": {
+    "feature": "sales_5",
+    "label": "Sales 5 days ago",
+    "business_meaning": "Historical sales observed 5 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_6": {
+    "feature": "sales_6",
+    "label": "Sales 6 days ago",
+    "business_meaning": "Historical sales observed 6 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_7": {
+    "feature": "sales_7",
+    "label": "Sales 7 days ago",
+    "business_meaning": "Historical sales observed 7 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_14": {
+    "feature": "sales_14",
+    "label": "Sales 14 days ago",
+    "business_meaning": "Historical sales observed 14 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_21": {
+    "feature": "sales_21",
+    "label": "Sales 21 days ago",
+    "business_meaning": "Historical sales observed 21 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_28": {
+    "feature": "sales_28",
+    "label": "Sales 28 days ago",
+    "business_meaning": "Historical sales observed 28 days before the forecast date",
+    "unit": "sales units",
+    "group": "sales_lag"
+  },
+  "sales_order_1": {
+    "feature": "sales_order_1",
+    "label": "Order-adjusted sales 1 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_1": {
+    "feature": "sales_price_1",
+    "label": "Price-adjusted sales 1 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_order_2": {
+    "feature": "sales_order_2",
+    "label": "Order-adjusted sales 2 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_2": {
+    "feature": "sales_price_2",
+    "label": "Price-adjusted sales 2 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_order_3": {
+    "feature": "sales_order_3",
+    "label": "Order-adjusted sales 3 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_3": {
+    "feature": "sales_price_3",
+    "label": "Price-adjusted sales 3 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_order_4": {
+    "feature": "sales_order_4",
+    "label": "Order-adjusted sales 4 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_4": {
+    "feature": "sales_price_4",
+    "label": "Price-adjusted sales 4 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_order_5": {
+    "feature": "sales_order_5",
+    "label": "Order-adjusted sales 5 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_5": {
+    "feature": "sales_price_5",
+    "label": "Price-adjusted sales 5 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_order_6": {
+    "feature": "sales_order_6",
+    "label": "Order-adjusted sales 6 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_6": {
+    "feature": "sales_price_6",
+    "label": "Price-adjusted sales 6 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_order_7": {
+    "feature": "sales_order_7",
+    "label": "Order-adjusted sales 7 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_7": {
+    "feature": "sales_price_7",
+    "label": "Price-adjusted sales 7 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_order_14": {
+    "feature": "sales_order_14",
+    "label": "Order-adjusted sales 14 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_14": {
+    "feature": "sales_price_14",
+    "label": "Price-adjusted sales 14 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_order_21": {
+    "feature": "sales_order_21",
+    "label": "Order-adjusted sales 21 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_21": {
+    "feature": "sales_price_21",
+    "label": "Price-adjusted sales 21 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_order_28": {
+    "feature": "sales_order_28",
+    "label": "Order-adjusted sales 28 days ago",
+    "business_meaning": "Historical sales scaled by the change in total order volume",
+    "unit": "adjusted sales units",
+    "group": "order_adjusted_lag"
+  },
+  "sales_price_28": {
+    "feature": "sales_price_28",
+    "label": "Price-adjusted sales 28 days ago",
+    "business_meaning": "Historical sales adjusted for the relative change in selling price",
+    "unit": "adjusted sales units",
+    "group": "price_adjusted_lag"
+  },
+  "sales_mean": {
+    "feature": "sales_mean",
+    "label": "Recent sales mean",
+    "business_meaning": "Average recent sales signal",
+    "unit": "sales units",
+    "group": "sales_summary"
+  },
+  "sales_order_mean": {
+    "feature": "sales_order_mean",
+    "label": "Sales Order Mean",
+    "business_meaning": "Historical demand signal",
+    "unit": "unknown",
+    "group": "sales_history"
+  },
+  "sales_price_mean": {
+    "feature": "sales_price_mean",
+    "label": "Sales Price Mean",
+    "business_meaning": "Price-related signal",
+    "unit": "unknown",
+    "group": "price"
+  },
+  "sales_min": {
+    "feature": "sales_min",
+    "label": "Recent minimum sales",
+    "business_meaning": "Minimum recent sales signal",
+    "unit": "sales units",
+    "group": "sales_summary"
+  },
+  "sales_order_min": {
+    "feature": "sales_order_min",
+    "label": "Sales Order Min",
+    "business_meaning": "Historical demand signal",
+    "unit": "unknown",
+    "group": "sales_history"
+  },
+  "sales_price_min": {
+    "feature": "sales_price_min",
+    "label": "Sales Price Min",
+    "business_meaning": "Price-related signal",
+    "unit": "unknown",
+    "group": "price"
+  },
+  "sales_max": {
+    "feature": "sales_max",
+    "label": "Recent maximum sales",
+    "business_meaning": "Maximum recent sales signal",
+    "unit": "sales units",
+    "group": "sales_summary"
+  },
+  "sales_order_max": {
+    "feature": "sales_order_max",
+    "label": "Sales Order Max",
+    "business_meaning": "Historical demand signal",
+    "unit": "unknown",
+    "group": "sales_history"
+  },
+  "sales_price_max": {
+    "feature": "sales_price_max",
+    "label": "Sales Price Max",
+    "business_meaning": "Price-related signal",
+    "unit": "unknown",
+    "group": "price"
+  },
+  "type_0_discount_1": {
+    "feature": "type_0_discount_1",
+    "label": "Type 0 Discount 1",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_1": {
+    "feature": "type_1_discount_1",
+    "label": "Type 1 Discount 1",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_1": {
+    "feature": "type_2_discount_1",
+    "label": "Type 2 Discount 1",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_1": {
+    "feature": "type_3_discount_1",
+    "label": "Type 3 Discount 1",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_1": {
+    "feature": "type_4_discount_1",
+    "label": "Type 4 Discount 1",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_1": {
+    "feature": "type_5_discount_1",
+    "label": "Type 5 Discount 1",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_1": {
+    "feature": "type_6_discount_1",
+    "label": "Type 6 Discount 1",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_0_discount_2": {
+    "feature": "type_0_discount_2",
+    "label": "Type 0 Discount 2",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_2": {
+    "feature": "type_1_discount_2",
+    "label": "Type 1 Discount 2",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_2": {
+    "feature": "type_2_discount_2",
+    "label": "Type 2 Discount 2",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_2": {
+    "feature": "type_3_discount_2",
+    "label": "Type 3 Discount 2",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_2": {
+    "feature": "type_4_discount_2",
+    "label": "Type 4 Discount 2",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_2": {
+    "feature": "type_5_discount_2",
+    "label": "Type 5 Discount 2",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_2": {
+    "feature": "type_6_discount_2",
+    "label": "Type 6 Discount 2",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_0_discount_3": {
+    "feature": "type_0_discount_3",
+    "label": "Type 0 Discount 3",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_3": {
+    "feature": "type_1_discount_3",
+    "label": "Type 1 Discount 3",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_3": {
+    "feature": "type_2_discount_3",
+    "label": "Type 2 Discount 3",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_3": {
+    "feature": "type_3_discount_3",
+    "label": "Type 3 Discount 3",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_3": {
+    "feature": "type_4_discount_3",
+    "label": "Type 4 Discount 3",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_3": {
+    "feature": "type_5_discount_3",
+    "label": "Type 5 Discount 3",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_3": {
+    "feature": "type_6_discount_3",
+    "label": "Type 6 Discount 3",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_0_discount_4": {
+    "feature": "type_0_discount_4",
+    "label": "Type 0 Discount 4",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_4": {
+    "feature": "type_1_discount_4",
+    "label": "Type 1 Discount 4",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_4": {
+    "feature": "type_2_discount_4",
+    "label": "Type 2 Discount 4",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_4": {
+    "feature": "type_3_discount_4",
+    "label": "Type 3 Discount 4",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_4": {
+    "feature": "type_4_discount_4",
+    "label": "Type 4 Discount 4",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_4": {
+    "feature": "type_5_discount_4",
+    "label": "Type 5 Discount 4",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_4": {
+    "feature": "type_6_discount_4",
+    "label": "Type 6 Discount 4",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_0_discount_5": {
+    "feature": "type_0_discount_5",
+    "label": "Type 0 Discount 5",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_5": {
+    "feature": "type_1_discount_5",
+    "label": "Type 1 Discount 5",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_5": {
+    "feature": "type_2_discount_5",
+    "label": "Type 2 Discount 5",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_5": {
+    "feature": "type_3_discount_5",
+    "label": "Type 3 Discount 5",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_5": {
+    "feature": "type_4_discount_5",
+    "label": "Type 4 Discount 5",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_5": {
+    "feature": "type_5_discount_5",
+    "label": "Type 5 Discount 5",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_5": {
+    "feature": "type_6_discount_5",
+    "label": "Type 6 Discount 5",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_0_discount_6": {
+    "feature": "type_0_discount_6",
+    "label": "Type 0 Discount 6",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_6": {
+    "feature": "type_1_discount_6",
+    "label": "Type 1 Discount 6",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_6": {
+    "feature": "type_2_discount_6",
+    "label": "Type 2 Discount 6",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_6": {
+    "feature": "type_3_discount_6",
+    "label": "Type 3 Discount 6",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_6": {
+    "feature": "type_4_discount_6",
+    "label": "Type 4 Discount 6",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_6": {
+    "feature": "type_5_discount_6",
+    "label": "Type 5 Discount 6",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_6": {
+    "feature": "type_6_discount_6",
+    "label": "Type 6 Discount 6",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_0_discount_7": {
+    "feature": "type_0_discount_7",
+    "label": "Type 0 Discount 7",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_7": {
+    "feature": "type_1_discount_7",
+    "label": "Type 1 Discount 7",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_7": {
+    "feature": "type_2_discount_7",
+    "label": "Type 2 Discount 7",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_7": {
+    "feature": "type_3_discount_7",
+    "label": "Type 3 Discount 7",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_7": {
+    "feature": "type_4_discount_7",
+    "label": "Type 4 Discount 7",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_7": {
+    "feature": "type_5_discount_7",
+    "label": "Type 5 Discount 7",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_7": {
+    "feature": "type_6_discount_7",
+    "label": "Type 6 Discount 7",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_0_discount_14": {
+    "feature": "type_0_discount_14",
+    "label": "Type 0 Discount 14",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_14": {
+    "feature": "type_1_discount_14",
+    "label": "Type 1 Discount 14",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_14": {
+    "feature": "type_2_discount_14",
+    "label": "Type 2 Discount 14",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_14": {
+    "feature": "type_3_discount_14",
+    "label": "Type 3 Discount 14",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_14": {
+    "feature": "type_4_discount_14",
+    "label": "Type 4 Discount 14",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_14": {
+    "feature": "type_5_discount_14",
+    "label": "Type 5 Discount 14",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_14": {
+    "feature": "type_6_discount_14",
+    "label": "Type 6 Discount 14",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_0_discount_21": {
+    "feature": "type_0_discount_21",
+    "label": "Type 0 Discount 21",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_21": {
+    "feature": "type_1_discount_21",
+    "label": "Type 1 Discount 21",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_21": {
+    "feature": "type_2_discount_21",
+    "label": "Type 2 Discount 21",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_21": {
+    "feature": "type_3_discount_21",
+    "label": "Type 3 Discount 21",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_21": {
+    "feature": "type_4_discount_21",
+    "label": "Type 4 Discount 21",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_21": {
+    "feature": "type_5_discount_21",
+    "label": "Type 5 Discount 21",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_21": {
+    "feature": "type_6_discount_21",
+    "label": "Type 6 Discount 21",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_0_discount_28": {
+    "feature": "type_0_discount_28",
+    "label": "Type 0 Discount 28",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_1_discount_28": {
+    "feature": "type_1_discount_28",
+    "label": "Type 1 Discount 28",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_2_discount_28": {
+    "feature": "type_2_discount_28",
+    "label": "Type 2 Discount 28",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_3_discount_28": {
+    "feature": "type_3_discount_28",
+    "label": "Type 3 Discount 28",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_4_discount_28": {
+    "feature": "type_4_discount_28",
+    "label": "Type 4 Discount 28",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_5_discount_28": {
+    "feature": "type_5_discount_28",
+    "label": "Type 5 Discount 28",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  },
+  "type_6_discount_28": {
+    "feature": "type_6_discount_28",
+    "label": "Type 6 Discount 28",
+    "business_meaning": "Promotion / discount signal",
+    "unit": "unknown",
+    "group": "promotion"
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DemandAI TreeSHAP Forecast Explanation",
+  "type": "object",
+  "required": [
+    "unique_id",
+    "warehouse",
+    "date",
+    "horizon",
+    "forecast",
+    "top_positive_features",
+    "top_negative_features"
+  ],
+  "properties": {
+    "unique_id": {
+      "type": "string"
+    },
+    "warehouse": {
+      "type": "string"
+    },
+    "date": {
+      "type": "string"
+    },
+    "horizon": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 14
+    },
+    "forecast": {
+      "type": "number"
+    },
+    "top_positive_features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "feature",
+          "feature_label",
+          "shap_value"
+        ],
+        "properties": {
+          "feature": {
+            "type": "string"
+          },
+          "feature_label": {
+            "type": "string"
+          },
+          "feature_group": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "feature_value": {},
+          "shap_value": {
+            "type": "number"
+          },
+          "direction": {
+            "const": "increase"
+          }
+        }
+      }
+    },
+    "top_negative_features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "feature",
+          "feature_label",
+          "shap_value"
+        ],
+        "properties": {
+          "feature": {
+            "type": "string"
+          },
+          "feature_label": {
+            "type": "string"
+          },
+          "feature_group": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "feature_value": {},
+          "shap_value": {
+            "type": "number"
+          },
+          "direction": {
+            "const": "decrease"
+          }
+        }
+      }
+    },
+    "explanation_semantics": {
+      "type": "string"
+    },
+    "ensemble_weights": {
+      "type": "object"
+    }
+  }
+}

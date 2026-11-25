@@ -1,0 +1,28 @@
+{
+  "datasets": [
+    {
+      "name": "calendar",
+      "file": "calendar.csv",
+      "schema": "raw",
+      "table": "calendar"
+    },
+    {
+      "name": "inventory",
+      "file": "inventory.csv",
+      "schema": "raw",
+      "table": "inventory"
+    },
+    {
+      "name": "test_weights",
+      "file": "test_weights.csv",
+      "schema": "raw",
+      "table": "test_weights"
+    },
+    {
+      "name": "sales_train",
+      "file": "sales_train.csv",
+      "schema": "raw",
+      "table": "sales_train"
+    }
+  ]
+}

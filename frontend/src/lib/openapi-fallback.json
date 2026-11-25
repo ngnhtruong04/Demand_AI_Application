@@ -1,0 +1,1736 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DemandAI Enterprise Demand Forecasting & Supply Chain API",
+    "description": "\n## DemandAI Enterprise API Services\n\nDemandAI is an enterprise-grade retail demand forecasting and inventory optimization platform. It combines **Recursive Ensemble Machine Learning**, **TreeSHAP Explainable AI**, **Two-Way Price Decision Simulation**, and a **Conversational Agent** to deliver actionable supply chain intelligence.\n\n---\n\n### Core Architectural Capabilities\n\n1. **14-Day Recursive Ensemble Forecasting (`/forecast`)**:\n   - Multi-model weighted ensemble: **CatBoost (36%) + LightGBM (34%) + XGBoost (30%)**.\n   - Recursive day-by-day inference across a 14-day future horizon.\n   - Dynamic inventory health classification: `In Stock`, `Monitor`, `Reorder`, `Critical (Stockout Risk)`, and `Deadstock`.\n\n2. **Two-Way Price Decision & Elasticity Engine (`/forecast/simulate`)**:\n   - **Clearance Markdown (-1% to -90%)**: Simulates demand lift, inventory depletion days (DOS), and deadstock clearance feasibility.\n   - **Markup & Revenue Optimization (+1% to +150%)**: Computes Price Elasticity of Demand (PED = %ΔQ / %ΔP), 14-day revenue impact ($P \\times Q$), and demand throttling (DOS expansion) for stockout mitigation.\n   - **Multi-Warehouse Network Rebalancing**: Auto-detects products across distribution hubs and recommends inter-warehouse stock transfers.\n\n3. **Executive Reporting & PO Replenishment (`/forecast/export`)**:\n   - **Multi-page Executive PDF Reports**: Clean 2-page executive layouts with vector charts (Category Donut chart, Top SKU bar charts, and paginated inventory data tables).\n   - **PO Replenishment Orders CSV**: ERP-ready purchase order recommendations incorporating lead time and safety stock buffers.\n\n4. **Conversational AI Agent (`/chat`)**:\n   - LangChain ReAct SKU specialist powered by `gpt-6-luna`.\n   - 9 specialized operational skills with strict tabular presentation directives (Prompt Rule 13).\n   - Server-Sent Events (SSE) streaming for real-time token delivery and tool call telemetry.\n\n5. **Authoritative Inventory Wiki (`/wiki`)**:\n   - Single Source of Truth for supply chain formulas (ROP, DOS, Safety Stock).\n   - Bidirectional backend-to-frontend synchronization ensuring zero configuration drift.\n",
+    "contact": {
+      "name": "DemandAI Engineering Team",
+      "url": "http://127.0.0.1:3000/"
+    },
+    "license": {
+      "name": "MIT License"
+    },
+    "version": "2.0.0"
+  },
+  "paths": {
+    "/api/v1/health/database": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Database Health",
+        "description": "Verify that PostgreSQL is reachable and this session uses TLS.",
+        "operationId": "health-database-health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  },
+                  "type": "object",
+                  "title": "Response Health-Database-Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/feature-engineering/run": {
+      "get": {
+        "tags": [
+          "feature-engineering"
+        ],
+        "summary": "Run feature engineering pipeline (SSE)",
+        "description": "Streams real-time progress events while running the feature engineering pipeline. Strictly READ-ONLY from DB (no writes). Produces the 30-day CSV upon completion.",
+        "operationId": "feature-engineering-run-feature-engineering-sse",
+        "parameters": [
+          {
+            "name": "inference_days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "Number of inference days (default 30)",
+              "default": 30,
+              "title": "Inference Days"
+            },
+            "description": "Number of inference days (default 30)"
+          },
+          {
+            "name": "test_mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Set True (default) for fast synthetic in-memory execution; False for full RDS extraction",
+              "default": true,
+              "title": "Test Mode"
+            },
+            "description": "Set True (default) for fast synthetic in-memory execution; False for full RDS extraction"
+          },
+          {
+            "name": "use_inactive_items",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Whether to include items with 10+ days of no sales (default False: filters them out immediately after load to save resources)",
+              "default": false,
+              "title": "Use Inactive Items"
+            },
+            "description": "Whether to include items with 10+ days of no sales (default False: filters them out immediately after load to save resources)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Server-Sent Events stream of pipeline step signals.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/feature-engineering/download-30d-csv": {
+      "get": {
+        "tags": [
+          "feature-engineering"
+        ],
+        "summary": "Download the produced 30-day feature engineered CSV",
+        "description": "Returns the CSV file generated by the feature engineering pipeline.",
+        "operationId": "feature-engineering-download-30d-csv",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pipeline/test-run": {
+      "get": {
+        "tags": [
+          "pipeline"
+        ],
+        "summary": "UI API Test: Mock Pipeline SSE Stream",
+        "description": "Streams real-time step callback emissions for frontend testing without touching DB. Set fast=true for snappy Swagger UI testing.",
+        "operationId": "pipeline-test-run-pipeline-sse",
+        "parameters": [
+          {
+            "name": "mock_mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Always True for UI API test",
+              "default": true,
+              "title": "Mock Mode"
+            },
+            "description": "Always True for UI API test"
+          },
+          {
+            "name": "fast",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Fast mode with reduced sleep intervals (recommended for Swagger UI testing)",
+              "default": false,
+              "title": "Fast"
+            },
+            "description": "Fast mode with reduced sleep intervals (recommended for Swagger UI testing)"
+          },
+          {
+            "name": "use_inactive_items",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Whether to include items with 10+ days no sales (default False filters them out immediately after load)",
+              "default": false,
+              "title": "Use Inactive Items"
+            },
+            "description": "Whether to include items with 10+ days no sales (default False filters them out immediately after load)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/runs": {
+      "post": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Start a real forecast job",
+        "operationId": "forecast-start-forecast-job",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartForecastRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Forecast-Start-Forecast-Job"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "List Historical & Active Forecast Runs",
+        "description": "Returns historical and active forecast simulation runs stored in PostgreSQL RDS.",
+        "operationId": "forecast-list-forecast-runs",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Max runs to return",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "Max runs to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Forecast-List-Forecast-Runs"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/runs/{job_id}": {
+      "get": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Read forecast job status",
+        "operationId": "forecast-forecast-job-status",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Forecast-Forecast-Job-Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/runs/{job_id}/events": {
+      "get": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Watch a forecast job without starting it",
+        "operationId": "forecast-forecast-job-events",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Job Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/runs/{run_id}/items/{item_id}/shap": {
+      "post": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Compute On-Demand TreeSHAP for SKU Item",
+        "description": "Dispatches asynchronous on-demand TreeSHAP calculation for a specific item within an active forecast run.",
+        "operationId": "forecast-start-item-shap",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted job status with item and run identifiers.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Forecast-Start-Item-Shap"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Get On-Demand TreeSHAP Status & Attributions",
+        "description": "Polls computation status and retrieves calculated TreeSHAP feature attributions for a specific SKU item in a forecast run.",
+        "operationId": "forecast-item-shap-status",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Item Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "TreeSHAP attributions breakdown or current calculation status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Forecast-Item-Shap-Status"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/forecast_status": {
+      "get": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Legacy Forecast Progress Stream (Deprecated)",
+        "description": "Deprecated legacy SSE endpoint. Please use POST /api/v1/forecast/runs and subscribe to /runs/{job_id}/events instead.",
+        "operationId": "forecast-forecast-status",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "deprecated": true
+      }
+    },
+    "/api/v1/forecast/sessions/expire": {
+      "post": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Expire a forecast session and prune old local files",
+        "operationId": "forecast-expire-session",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ExpireSessionRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Req"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Forecast-Expire-Session"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/get_forecast_14d": {
+      "get": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Get 14-Day Recursive Ensemble Forecast",
+        "description": "Returns 14-day predictions, dynamic inventory status, and TreeSHAP drivers. Supports limit & offset for fast Swagger UI testing, and top_k for feature driver aggregation.",
+        "operationId": "forecast-get-forecast-14d",
+        "parameters": [
+          {
+            "name": "unique_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Item unique_id or 'all'",
+              "default": "all",
+              "title": "Unique Id"
+            },
+            "description": "Item unique_id or 'all'"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 6000,
+              "minimum": 1,
+              "description": "Max items to return (default 50 for responsive UI/Swagger, up to 6000)",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Max items to return (default 50 for responsive UI/Swagger, up to 6000)"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Pagination offset",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Pagination offset"
+          },
+          {
+            "name": "top_k",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 150,
+              "minimum": 0,
+              "description": "Number of top SHAP features to return. Remaining features are aggregated into 'Other Features'. Set 0 for 100% full features.",
+              "default": 5,
+              "title": "Top K"
+            },
+            "description": "Number of top SHAP features to return. Remaining features are aggregated into 'Other Features'. Set 0 for 100% full features."
+          },
+          {
+            "name": "use_inactive_items",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Whether to include items with 10+ days no sales (default False filters them out immediately)",
+              "default": false,
+              "title": "Use Inactive Items"
+            },
+            "description": "Whether to include items with 10+ days no sales (default False filters them out immediately)"
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "auto",
+                "database",
+                "cache"
+              ],
+              "type": "string",
+              "description": "Keep the same data source across paginated requests",
+              "default": "auto",
+              "title": "Source"
+            },
+            "description": "Keep the same data source across paginated requests"
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pin database pages to a forecast run",
+              "title": "Run Id"
+            },
+            "description": "Pin database pages to a forecast run"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Forecast-Get-Forecast-14D"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/save_current_forecast": {
+      "post": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Persist Active Forecast to RDS",
+        "description": "Saves current ensemble predictions and 100% TreeSHAP attributions into a new versioned run on PostgreSQL RDS with 10-run retention limit.",
+        "operationId": "forecast-save-current-forecast",
+        "parameters": [
+          {
+            "name": "model_version",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Model version identifier",
+              "default": "recursive-ensemble-v1.0",
+              "title": "Model Version"
+            },
+            "description": "Model version identifier"
+          },
+          {
+            "name": "is_latest",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Mark this run as active latest forecast",
+              "default": true,
+              "title": "Is Latest"
+            },
+            "description": "Mark this run as active latest forecast"
+          },
+          {
+            "name": "max_runs_to_keep",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Max recent runs to keep in RDS (retention policy)",
+              "default": 10,
+              "title": "Max Runs To Keep"
+            },
+            "description": "Max recent runs to keep in RDS (retention policy)"
+          },
+          {
+            "name": "session_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional session identifier to tie this run to a user session",
+              "title": "Session Key"
+            },
+            "description": "Optional session identifier to tie this run to a user session"
+          },
+          {
+            "name": "allow_overwrite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Whether to allow overwriting an existing run with same session_key",
+              "default": true,
+              "title": "Allow Overwrite"
+            },
+            "description": "Whether to allow overwriting an existing run with same session_key"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Forecast-Save-Current-Forecast"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/prune_runs": {
+      "post": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Prune Historical Forecast Runs",
+        "description": "Enforces retention limit by pruning older forecast runs beyond max_runs_to_keep (default 10).",
+        "operationId": "forecast-prune-forecast-runs",
+        "parameters": [
+          {
+            "name": "max_runs_to_keep",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Number of most recent runs to retain",
+              "default": 10,
+              "title": "Max Runs To Keep"
+            },
+            "description": "Number of most recent runs to retain"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Forecast-Prune-Forecast-Runs"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/simulate": {
+      "post": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Run What-If Demand & Two-Way Price Simulation",
+        "description": "Executes 14-day ML ensemble re-inference under two-way price changes (discounts: -1% to -90%, or price increases: +1% to +150%). Calculates 14-day revenue impact (P x Q), Price Elasticity of Demand (PED), Days of Supply (DOS), and deadstock clearance feasibility. Automatically performs multi-warehouse network rebalancing and inter-warehouse stock transfer triage.",
+        "operationId": "forecast-run-demand-simulation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Simulation metrics including baseline vs simulated demand, revenue delta, PED classification, and markdown report.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Forecast-Run-Demand-Simulation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/export/pdf": {
+      "post": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Generate Executive Multi-Page PDF Report",
+        "description": "Generates an executive-grade, presentation-ready multi-page PDF report with embedded vector charts (Category Donut chart, Top SKU bar charts, and paginated inventory data tables). Saves the PDF to the exports repository and returns download URL and file metadata.",
+        "operationId": "forecast-generate-pdf-management-report",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportPdfRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Report metadata including download URL, filename, and markdown summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Forecast-Generate-Pdf-Management-Report"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/export/replenishment": {
+      "post": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Generate PO Replenishment Orders CSV",
+        "description": "Calculates recommended purchase order (PO) replenishment quantities with safety stock buffers for a specific warehouse or network-wide, exporting to a CSV file ready for procurement ingestion.",
+        "operationId": "forecast-generate-replenishment-orders-csv",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportReplenishmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Export metadata including download link, filename, and markdown summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Forecast-Generate-Replenishment-Orders-Csv"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/forecast/export/download/{filename}": {
+      "get": {
+        "tags": [
+          "forecast"
+        ],
+        "summary": "Download Generated Export File (PDF or CSV)",
+        "description": "Download an executive PDF management report or replenishment CSV file from the exports storage.",
+        "operationId": "forecast-download-export-file",
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filename"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chat/models": {
+      "get": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "List Supported AI Models & Runtime Providers",
+        "description": "Returns the registry of supported Large Language Models (including GPT-6 Luna), their context window limits, active API credentials, and current runtime default model.",
+        "operationId": "chat-get-models",
+        "responses": {
+          "200": {
+            "description": "Active model registry metadata and runtime boot identifier.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Chat-Get-Models"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chat/stream": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Stream Assistant Dialogue Response (SSE)",
+        "description": "Streams token-by-token analytical reasoning, tool execution progress, and formatted markdown tables using Server-Sent Events (SSE). Recommended for responsive real-time chat UX.",
+        "operationId": "chat-post-stream",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Server-Sent Events stream with 'token', 'tool_call', and 'done' events.",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chat/message": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Submit Chat Message (Synchronous or Stream)",
+        "description": "Processes user inquiries via the LangChain ReAct SKU Agent. Seamlessly evaluates intent, executes specialized analytics tools (TreeSHAP drivers, replenishment calculations, What-If price simulations), and returns an executive-grade Markdown analysis.",
+        "operationId": "chat-post-message",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Structured ChatResponse payload with markdown text and token usage metadata.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/chat/cleanup": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Prune Historical Chat Export Files",
+        "description": "Enforces artifact retention policy by pruning older generated executive PDF reports and replenishment CSV files from the data/exports directory, keeping only the 5 most recent files (FIFO strategy).",
+        "operationId": "chat-cleanup-chat-session",
+        "responses": {
+          "200": {
+            "description": "Cleanup status, list of pruned files, and retained capacity limit.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Chat-Cleanup-Chat-Session"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/wiki": {
+      "get": {
+        "tags": [
+          "wiki"
+        ],
+        "summary": "Get Complete Authoritative Inventory Wiki",
+        "description": "Retrieves all official inventory metrics definitions, calculation formulas, and status thresholds. Automatically checks and synchronizes the authoritative wiki state to the frontend repository.",
+        "operationId": "wiki-get-all-wiki",
+        "responses": {
+          "200": {
+            "description": "Consolidated wiki payload containing metrics, status definitions, and sync status flag.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Wiki-Get-All-Wiki"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/wiki/metrics": {
+      "get": {
+        "tags": [
+          "wiki"
+        ],
+        "summary": "Get Inventory Metrics Formulas & Definitions",
+        "description": "Retrieves authoritative formulas, calculation rationale, and guidance for key supply chain metrics including Reorder Point (ROP), Days of Supply (DOS), Safety Stock, TreeSHAP drivers, and Lead Time.",
+        "operationId": "wiki-get-wiki-metrics",
+        "responses": {
+          "200": {
+            "description": "Dictionary mapping metric IDs to calculation formulas and explanations.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Wiki-Get-Wiki-Metrics"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/wiki/status": {
+      "get": {
+        "tags": [
+          "wiki"
+        ],
+        "summary": "Get Inventory Health Status Thresholds",
+        "description": "Retrieves operational criteria and classification boundaries for SKU inventory triage including In Stock, Monitor, Reorder, Critical (Stockout Risk), and Deadstock (Capital Trap).",
+        "operationId": "wiki-get-wiki-status",
+        "responses": {
+          "200": {
+            "description": "Dictionary mapping status labels to business rules and threshold parameters.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Wiki-Get-Wiki-Status"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/wiki/sync": {
+      "post": {
+        "tags": [
+          "wiki"
+        ],
+        "summary": "Trigger On-Demand Wiki Synchronization",
+        "description": "Manually synchronizes backend authoritative inventory markdown files directly to the frontend wiki repository, ensuring 100% parity across UI tooltips, chat knowledge, and documentation.",
+        "operationId": "wiki-post-sync-wiki",
+        "responses": {
+          "200": {
+            "description": "Synchronization result status and confirmation message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Wiki-Post-Sync-Wiki"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Root Service Discovery",
+        "description": "Returns platform application metadata and link to interactive OpenAPI Swagger documentation.",
+        "operationId": "system-root",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response System-Root"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Liveness Health Check",
+        "description": "Lightweight liveness probe checking FastAPI server health without contacting PostgreSQL database.",
+        "operationId": "system-health",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response System-Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ChatRequest": {
+        "properties": {
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/MessageItem"
+            },
+            "type": "array",
+            "title": "Messages",
+            "description": "Chronological list of dialogue messages including past context and current user prompt."
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "Target LLM model identifier (e.g. 'gpt-6-luna'). Defaults to system configured default model.",
+            "examples": [
+              "gpt-6-luna"
+            ]
+          },
+          "selected_item_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selected Item Id",
+            "description": "Active SKU unique_id selected in the dashboard UI for contextual grounding.",
+            "examples": [
+              "4471"
+            ]
+          },
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id",
+            "description": "Session tracking identifier for persisting multi-turn conversation context.",
+            "examples": [
+              "session-94863c47"
+            ]
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 2.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature",
+            "description": "Sampling temperature (lower values ensure strictly factual, deterministic inventory recommendations).",
+            "default": 0.1,
+            "examples": [
+              0.1
+            ]
+          },
+          "top_p": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top P",
+            "description": "Nucleus sampling probability threshold.",
+            "default": 0.9,
+            "examples": [
+              0.9
+            ]
+          },
+          "max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 8000.0,
+                "minimum": 100.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Tokens",
+            "description": "Maximum generation completion tokens (default 2500 ensures full multi-warehouse tables without truncation).",
+            "default": 2500,
+            "examples": [
+              2500
+            ]
+          },
+          "stream": {
+            "type": "boolean",
+            "title": "Stream",
+            "description": "Whether to stream the assistant response as Server-Sent Events (SSE).",
+            "default": false,
+            "examples": [
+              false
+            ]
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language",
+            "description": "Preferred response language: 'en' (English) or 'vi' (Vietnamese).",
+            "default": "en",
+            "examples": [
+              "vi"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "messages"
+        ],
+        "title": "ChatRequest",
+        "description": "Payload for conversational inquiry submission."
+      },
+      "ChatResponse": {
+        "properties": {
+          "reply": {
+            "type": "string",
+            "title": "Reply",
+            "description": "Markdown response generated by the assistant, including BLUF, comparison tables, and operational guidance."
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "Model identifier utilized for generation.",
+            "examples": [
+              "gpt-6-luna"
+            ]
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider",
+            "description": "Inference provider hosting the model.",
+            "examples": [
+              "openai"
+            ]
+          },
+          "used_tokens": {
+            "type": "integer",
+            "title": "Used Tokens",
+            "description": "Total token count consumed by input prompts and output generation.",
+            "examples": [
+              1240
+            ]
+          },
+          "context_size": {
+            "type": "integer",
+            "title": "Context Size",
+            "description": "Maximum context window capacity of the active model in tokens.",
+            "examples": [
+              1000000
+            ]
+          },
+          "compacted": {
+            "type": "boolean",
+            "title": "Compacted",
+            "description": "Flag indicating if conversation history underwent compression/compaction.",
+            "default": false,
+            "examples": [
+              false
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "reply",
+          "model",
+          "provider",
+          "used_tokens",
+          "context_size"
+        ],
+        "title": "ChatResponse",
+        "description": "Structured response from the DemandAI Conversational Assistant."
+      },
+      "ExpireSessionRequest": {
+        "properties": {
+          "session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Id"
+          }
+        },
+        "type": "object",
+        "title": "ExpireSessionRequest"
+      },
+      "ExportPdfRequest": {
+        "properties": {
+          "focus_area": {
+            "type": "string",
+            "enum": [
+              "overview",
+              "critical",
+              "deadstock",
+              "best_seller"
+            ],
+            "title": "Focus Area",
+            "description": "Report topic: 'overview' (Portfolio health), 'critical' (Stockout triage), 'deadstock' (Slow-moving capital traps), or 'best_seller' (High-demand volume drivers).",
+            "default": "overview",
+            "examples": [
+              "deadstock"
+            ]
+          },
+          "warehouse": {
+            "type": "string",
+            "title": "Warehouse",
+            "description": "Target warehouse distribution hub (e.g. 'Prague_1', 'Brno_1') or 'all' for network-wide synthesis.",
+            "default": "all",
+            "examples": [
+              "Prague_1"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "ExportPdfRequest",
+        "description": "Payload for generating executive multi-page PDF management reports."
+      },
+      "ExportReplenishmentRequest": {
+        "properties": {
+          "warehouse": {
+            "type": "string",
+            "title": "Warehouse",
+            "description": "Target warehouse distribution hub (e.g. 'Prague_1', 'Brno_1') or 'all' for network-wide replenishment orders.",
+            "default": "all",
+            "examples": [
+              "Prague_1"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "ExportReplenishmentRequest",
+        "description": "Payload for generating purchase order (PO) replenishment CSV file."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MessageItem": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "Message author role: 'user', 'assistant', or 'system'",
+            "examples": [
+              "user"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "description": "Message text content",
+            "examples": [
+              "Nếu tuần sau tôi giảm giá 20% cho Baguette_40 thì bán được bao nhiêu? Có cứu được deadstock không?"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "text"
+        ],
+        "title": "MessageItem",
+        "description": "Single message item in a conversational dialogue."
+      },
+      "SimulationRequest": {
+        "properties": {
+          "sku_code": {
+            "type": "string",
+            "title": "Sku Code",
+            "description": "SKU code (e.g. 'SKU-4471', '4471') or product name (e.g. 'Baguette_40').",
+            "examples": [
+              "Baguette_40"
+            ]
+          },
+          "price_change_percent": {
+            "type": "number",
+            "maximum": 150.0,
+            "minimum": -90.0,
+            "title": "Price Change Percent",
+            "description": "Percentage change in price. Use NEGATIVE for discounts (e.g. -20 for 20% clearance discount) or POSITIVE for price increase (e.g. +15 for 15% markup).",
+            "default": -20.0,
+            "examples": [
+              15.0
+            ]
+          },
+          "warehouse": {
+            "type": "string",
+            "title": "Warehouse",
+            "description": "Target warehouse distribution hub (e.g. 'Prague_1'). If omitted and product is multi-warehouse, automatically evaluates all distribution hubs.",
+            "default": "",
+            "examples": [
+              ""
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "sku_code"
+        ],
+        "title": "SimulationRequest",
+        "description": "Payload for What-If demand and two-way price elasticity simulation."
+      },
+      "StartForecastRequest": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Request Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id"
+        ],
+        "title": "StartForecastRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "forecast",
+      "description": "**Demand Forecasting & Simulation Engine**: 14-day recursive multi-model ensemble (CatBoost, LightGBM, XGBoost), TreeSHAP value driver explainability, Two-Way Price Decision & Elasticity Engine (discounts & price hikes), executive multi-page PDF report generation, and PO replenishment CSV exports."
+    },
+    {
+      "name": "chat",
+      "description": "**DemandAI Conversational Assistant**: Enterprise-grade multi-turn agent with 9 specialist analytical skills, dynamic intent guard filters, real-time RAG grounding over inventory telemetry, and Server-Sent Events (SSE) token streaming."
+    },
+    {
+      "name": "wiki",
+      "description": "**Authoritative Inventory Wiki**: Centralized calculation formulas, business rules, and status threshold criteria for ROP, Days of Supply (DOS), Safety Stock, Deadstock triage, and on-demand frontend synchronization."
+    },
+    {
+      "name": "pipeline",
+      "description": "**ETL & Execution Pipeline**: Real-time streaming pipeline callbacks for data ingestion, cleaning, validation, and model preparation with Server-Sent Events (SSE)."
+    },
+    {
+      "name": "feature-engineering",
+      "description": "**Time-Series Feature Store**: Rolling momentum indicators, calendar seasonality lags, discount interaction signals, and feature dataset export services."
+    },
+    {
+      "name": "health",
+      "description": "**Infrastructure & Connectivity**: PostgreSQL RDS encrypted connection verification, TLS cipher audits, and database readiness probes."
+    },
+    {
+      "name": "system",
+      "description": "**System Runtime Probes**: Service liveness probes, root metadata, and Swagger API documentation discovery."
+    }
+  ]
+}

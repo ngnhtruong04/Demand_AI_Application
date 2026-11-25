@@ -1,0 +1,67 @@
+{
+  "title": "Inventory Status Determination & Calculation",
+  "version": "1.0",
+  "description": "Rules and formulas used by the demand forecasting engine to dynamically determine SKU inventory statuses based on predicted demand, current stock, safety stock, and lead time.",
+  "formulas": {
+    "daily_sales": "14d Forecast / 14",
+    "days_of_supply": "Current Stock / Daily Sales",
+    "reorder_point": "(Lead Time Days * Daily Sales) + Safety Stock"
+  },
+  "statuses": {
+    "Deadstock": {
+      "name": "Deadstock",
+      "badgeClass": "status-deadstock",
+      "summary": "Low turnover or idle inventory tying up working capital.",
+      "calculation": "Stock > 0 AND (Daily Sales < 1 unit/day OR Days of Supply > 365 days)",
+      "condition_order": 1,
+      "details": "Days of Supply = Current Stock / Daily Sales (estimated days current stock will last). Triggered when inventory exceeds 365 days of projected demand, or sales velocity is under 1 unit per day.",
+      "action": "Liquidate, discount, bundle, or halt replenishment to free up capital.",
+      "color": "#8b5cf6",
+      "urgency": "Capital Trap"
+    },
+    "Critical": {
+      "name": "Critical",
+      "badgeClass": "status-critical",
+      "summary": "Stock has reached or breached safety stock buffer with immediate stockout risk.",
+      "calculation": "Current Stock <= Safety Stock",
+      "condition_order": 2,
+      "details": "Stock is at or below the minimum reserve buffer designed to protect against demand surges and supplier delays.",
+      "action": "Initiate emergency replenishment or expedite supplier shipment immediately.",
+      "color": "#d21d0a",
+      "urgency": "Emergency"
+    },
+    "Reorder": {
+      "name": "Reorder",
+      "badgeClass": "status-reorder",
+      "summary": "Current stock has reached or dropped below Reorder Point (ROP).",
+      "calculation": "Current Stock <= Reorder Point (ROP)",
+      "condition_order": 3,
+      "details": "Stock will run out before new delivery arrives unless an order is placed now.",
+      "action": "Place purchase order according to standard replenishment quantity.",
+      "color": "#f59e0b",
+      "urgency": "High"
+    },
+    "Monitor": {
+      "name": "Monitor",
+      "badgeClass": "status-monitor",
+      "summary": "Approaching reorder threshold or projected to reach ROP during lead time.",
+      "calculation": "Current Stock <= ROP * 1.2 OR (Current Stock - Lead Time * Daily Sales) <= ROP",
+      "condition_order": 4,
+      "details": "Stock is safe today but within 20% of reorder trigger, or sales run-rate will deplete inventory into reorder level during delivery time.",
+      "action": "Monitor daily consumption closely and prepare purchase requisitions.",
+      "color": "#3b82f6",
+      "urgency": "Medium"
+    },
+    "In Stock": {
+      "name": "In Stock",
+      "badgeClass": "status-in-stock",
+      "summary": "Healthy inventory level with adequate buffer above reorder thresholds.",
+      "calculation": "Current Stock > ROP * 1.2 (and not Deadstock)",
+      "condition_order": 5,
+      "details": "Inventory levels are balanced against expected customer demand and supplier lead times.",
+      "action": "Normal operations; no replenishment action required.",
+      "color": "#4da20c",
+      "urgency": "Normal"
+    }
+  }
+}
